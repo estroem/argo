@@ -1,17 +1,19 @@
 apiVersion: argoproj.io/v1alpha1
-kind: Workflow                  # new type of k8s spec
+kind: WorkflowTemplate
 metadata:
-  name: hello-world    # name of the workflow spec
+  name: workflow-template-submittable
   namespace: default
 spec:
-  entrypoint: whalesay          # invoke the whalesay template
+  arguments:
+    parameters:
+      - name: message
+        value: hello world
   templates:
-    - name: whalesay              # name of the template
+    - name: whalesay-template
+      inputs:
+        parameters:
+          - name: message
       container:
         image: docker/whalesay
-        command: [ cowsay ]
-        args: [ "hello world" ]
-        resources: # limit the resources
-          limits:
-            memory: 32Mi
-            cpu: 100m
+        command: [cowsay]
+        args: ["{{inputs.parameters.message}}"]
